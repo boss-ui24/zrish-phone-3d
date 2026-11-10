@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zrish 18 Ultra — Shot in the dark</title>
+<meta name="description" content="Concept product page for a fictional phone: a real-time 3D handset in frosted glass and titanium, four finishes, a scroll-driven story.">
+<meta name="theme-color" content="#111215">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23140910'/%3E%3Cpath d='M8 7h16v3.6L13.6 21.4H24V25H8v-3.6L18.4 10.6H8z' fill='%23f3f4f6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script>document.documentElement.classList.replace('no-js', 'js');</script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+<div class="loader" id="loader" aria-hidden="true">
+  <svg class="loader__mark" viewBox="0 0 32 32"><path d="M8 7h16v3.6L13.6 21.4H24V25H8v-3.6L18.4 10.6H8z"/></svg>
+  <div class="loader__bar"><i></i></div>
+  <p class="loader__txt">Zrish 18 Ultra</p>
+</div>
+
+<!-- Фон: градиент, пятно-прожектор, ёлки. Цвета задаёт scene.js через CSS-переменные -->
+<div class="bg" aria-hidden="true">
+  <div class="bg__base"></div>
+  <div class="bg__spot"></div>
+  <div class="pines" id="pines"></div>
+  <div class="bg__vignette"></div>
+</div>
+<div class="glow" id="glow" aria-hidden="true"></div>
+<canvas id="air" aria-hidden="true"></canvas>
+<canvas id="gl" aria-hidden="true"></canvas>
+
+<!-- Выноски: точку ставит scene.js по 3D-якорю, видимость — app.js по прогрессу секции -->
+<div class="callouts" aria-hidden="true">
+  <div class="co" data-anchor="action" data-sec="frame" data-in=".14" data-out=".44" data-dx="170" data-dy="-10"><i class="co__dot"></i><i class="co__line"></i><div class="co__box"><b>Action button</b><span>One press, any shortcut</span></div></div>
+  <div class="co" data-anchor="volume" data-sec="frame" data-in=".16" data-out=".44" data-dx="170" data-dy="40"><i class="co__dot"></i><i class="co__line"></i><div class="co__box"><b>Volume</b><span>Machined, not stamped</span></div></div>
+  <div class="co" data-anchor="antennaL" data-sec="frame" data-in=".18" data-out=".44" data-dx="150" data-dy="-90"><i class="co__dot"></i><i class="co__line"></i><div class="co__box"><b>Antenna lines</b><span>5G and Wi‑Fi 7 breathe here</span></div></div>
+  <div class="co" data-anchor="band" data-sec="frame" data-in=".2" data-out=".44" data-dx="160" data-dy="40"><i class="co__dot"></i><i class="co__line"></i><div class="co__box"><b>Grade 5 titanium</b><span>Brushed along its length</span></div></div>
+  <div class="co" data-anchor="side" data-sec="frame" data-in=".66" data-out=".96" data-dx="150" data-dy="-60"><i class="co__dot"></i><i class="co__line"></i><div class="co__box"><b>Side button</b><span>Wake, pay, talk</span></div></div>
+  <div class="co" data-anchor="control" data-sec="frame" data-in=".68" data-out=".96" data-dx="160" data-dy="30"><i class="co__dot"></i><i class="co__line"></i><div class="co__box"><b>Camera Control</b><span>Sapphire, pressure‑sensitive</span></div></div>
+  <div class="co" data-anchor="usb" data-sec="frame" data-in=".7" data-out=".96" data-dx="150" data-dy="40"><i class="co__dot"></i><i class="co__line"></i><div class="co__box"><b>USB‑C</b><span>10 Gb/s, 45 W in</span></div></div>
+
+  <div class="co" data-anchor="main" data-sec="camera" data-in=".3" data-out=".95" data-dx="-150" data-dy="-150"><i class="co__dot"></i><i class="co__line"></i><div class="co__box"><b>Main · 48 MP</b><span>ƒ/1.78, 24 mm, 2nd‑gen sensor shift</span></div></div>
+  <div class="co" data-anchor="ultra" data-sec="camera" data-in=".34" data-out=".95" data-dx="110" data-dy="250"><i class="co__dot"></i><i class="co__line"></i><div class="co__box"><b>Ultra Wide · 48 MP</b><span>ƒ/2.2, macro from 2 cm</span></div></div>
+  <div class="co" data-anchor="tele" data-sec="camera" data-in=".38" data-out=".95" data-dx="190" data-dy="0"><i class="co__dot"></i><i class="co__line"></i><div class="co__box"><b>Telephoto · 5×</b><span>Tetraprism, 120 mm</span></div></div>
+  <div class="co" data-anchor="flash" data-sec="camera" data-in=".42" data-out=".95" data-dx="150" data-dy="-80"><i class="co__dot"></i><i class="co__line"></i><div class="co__box"><b>Dual‑tone flash</b><span>Warm and cool LEDs</span></div></div>
+  <div class="co" data-anchor="lidar" data-sec="camera" data-in=".46" data-out=".95" data-dx="170" data-dy="60"><i class="co__dot"></i><i class="co__line"></i><div class="co__box"><b>LiDAR</b><span>Focus in the dark</span></div></div>
+</div>
+
+<header class="bar">
+  <nav class="bar__nav" aria-label="Sections">
+    <a href="#frame" data-go=".3">Design</a>
+    <a href="#camera" data-go=".45">Camera</a>
+    <a href="#display" data-go=".35">Display</a>
+    <a href="#colors" data-go=".15">Colours</a>
+    <a href="#specs" data-go="0">Specs</a>
+  </nav>
+  <a class="bar__brand" href="#top" aria-label="Zrish, back to top">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 7h16v3.6L13.6 21.4H24V25H8v-3.6L18.4 10.6H8z"/></svg>
+    <span>zrish</span><em>18 Ultra</em>
+  </a>
+  <a class="bar__buy" href="#finale" data-go=".5">Pre-order</a>
+</header>
+
+<nav class="rail" aria-hidden="true">
+  <i data-rail="hero"></i><i data-rail="intro"></i><i data-rail="frame"></i><i data-rail="camera"></i><i data-rail="display"></i><i data-rail="battery"></i><i data-rail="colors"></i><i data-rail="finale"></i><i data-rail="specs"></i>
+</nav>
+
+<main id="top">
+
+  <section class="sec hero" id="hero">
+    <div class="hero__title">
+      <p class="hero__kicker">Zrish 18</p>
+      <h1 class="mega" aria-label="Zrish 18 Ultra"><span>U</span><span>L</span><span>T</span><span>R</span><span>A</span></h1>
+    </div>
+    <div class="hero__foot">
+      <p class="hero__line">Shot in the dark.<br>Built for it.</p>
+      <div class="hero__cta">
+        <a class="btn btn--solid" href="#finale" data-go=".5">Pre-order</a>
+        <a class="btn btn--ghost" href="#intro" data-go=".5">Explore</a>
+      </div>
+      <p class="hero__note mono">Pre-orders open 21 November</p>
+    </div>
+    <div class="hero__scroll mono" aria-hidden="true"><span>Scroll</span><i></i></div>
+  </section>
+
+  <section class="sec" id="intro" data-sticky style="--h:300">
+    <div class="pin">
+      <div class="copy">
+        <p class="kicker rv" data-in=".34" data-out="1.2"><i class="dot"></i><span class="js-color">Frost</span>&nbsp;titanium</p>
+        <h2 class="name" data-split data-in=".36" data-out="1.2">Zrish 18<br><em>Ultra</em></h2>
+        <p class="lead rv" data-in=".42" data-out="1.2">Frosted glass, a grade 5 titanium band and three cameras tuned for the hours after sunset. Big enough to edit on, thin enough to forget in a pocket.</p>
+        <ul class="chips rv" data-in=".48" data-out="1.2">
+          <li>6.9″ OLED</li><li>Umbra N3 chip</li><li>48 MP × 3</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="frame" data-sticky style="--h:280">
+    <div class="pin">
+      <div class="copy">
+        <p class="stat rv" data-in=".1" data-out=".98"><span class="num" data-count="8.25">8.25</span><small>mm</small></p>
+        <h2 class="h2" data-split data-in=".12" data-out=".98">Titanium,<br>cut thin.</h2>
+        <p class="lead rv" data-in=".16" data-out=".98">A grade 5 titanium band, brushed along its length and softened wherever a finger lands. Lighter than steel, stiffer than aluminium — 221 g all in.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="camera" data-sticky style="--h:260">
+    <div class="pin">
+      <div class="copy copy--low">
+        <p class="stat rv" data-in=".14" data-out=".98"><span class="num" data-count="48">48</span><small>MP</small></p>
+        <h2 class="h2" data-split data-in=".16" data-out=".98">Three eyes.<br>One night.</h2>
+        <p class="lead rv" data-in=".2" data-out=".98">A larger main sensor, a 5× tetraprism telephoto and an ultra wide that focuses at two centimetres. Night mode runs on all three.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="display" data-sticky style="--h:320">
+    <div class="pin">
+      <div class="copy">
+        <div class="swap">
+          <div class="swap__a">
+            <p class="stat rv" data-in=".16" data-out=".52"><span class="num" data-count="3000">3000</span><small>nits</small></p>
+            <h2 class="h2" data-split data-in=".18" data-out=".52">Loud at noon.<br>Quiet at midnight.</h2>
+            <p class="lead rv" data-in=".22" data-out=".52">A 6.9″ OLED that runs from 1 to 120 Hz, peaks at 3000 nits in direct sun and dims to a single nit when you read in bed.</p>
+          </div>
+          <div class="swap__b">
+            <p class="stat rv" data-in=".6" data-out=".98"><span class="num" data-count="4">4</span><small>layers</small></p>
+            <h2 class="h2" data-split data-in=".62" data-out=".98">Depth,<br>not a picture.</h2>
+            <p class="lead rv" data-in=".66" data-out=".98">Clock, widgets and alerts float on their own planes above the wallpaper, so the lock screen shifts with every tilt of your hand.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="battery" data-sticky style="--h:220">
+    <div class="pin">
+      <div class="orb" aria-hidden="true"></div>
+      <div class="copy">
+        <p class="stat rv" data-in=".12" data-out=".95"><span class="num" data-count="33">33</span><small>hours</small></p>
+        <h2 class="h2" data-split data-in=".14" data-out=".95">Charge once.<br>See sunrise.</h2>
+        <p class="lead rv" data-in=".18" data-out=".95">Up to 33 hours of video. Half full in 25 minutes over a 45 W cable, or set it down on a 25 W magnetic puck and walk away.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="colors" data-sticky style="--h:420">
+    <div class="pin">
+      <div class="copy">
+        <p class="kicker rv" data-in=".08" data-out=".99"><i class="dot"></i><span class="js-color">Frost</span></p>
+        <h2 class="name" data-split data-in=".1" data-out=".99">Zrish 18<br><em>Ultra</em></h2>
+        <p class="lead rv js-color-note" data-in=".14" data-out=".99">Four finishes, each mixed into the glass rather than painted on.</p>
+        <div class="swatches rv" data-in=".16" data-out=".99" role="group" aria-label="Choose a finish">
+          <button class="sw" data-c="0" aria-label="Frost"><i style="--sw:#e8e7e3"></i><span>Frost</span></button>
+          <button class="sw" data-c="1" aria-label="Glacier"><i style="--sw:#9eacbf"></i><span>Glacier</span></button>
+          <button class="sw" data-c="2" aria-label="Rosé"><i style="--sw:#e3c9c2"></i><span>Rosé</span></button>
+          <button class="sw" data-c="3" aria-label="Obsidian"><i style="--sw:#38393c"></i><span>Obsidian</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec finale" id="finale" data-sticky style="--h:220">
+    <div class="pin pin--back">
+      <p class="mega mega--finale" aria-hidden="true" data-in=".04" data-out="1.2"><span>U</span><span>L</span><span>T</span><span>R</span><span>A</span></p>
+    </div>
+    <div class="pin pin--front">
+      <div class="finale__copy">
+        <h2 class="h2" data-split data-in=".2" data-out="1.2">Made for the night.</h2>
+        <p class="lead rv" data-in=".26" data-out="1.2">Zrish 18 Ultra from $1,199, or $49.95/mo. for 24 months.</p>
+        <div class="finale__cta rv" data-in=".3" data-out="1.2">
+          <a class="btn btn--solid" href="#specs" data-go="0">Pre-order</a>
+          <a class="btn btn--ghost" href="#specs" data-go="0">Compare models</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="specs" id="specs">
+    <div class="specs__in">
+      <h2 class="h2 specs__title">Which Zrish is yours?</h2>
+      <div class="specs__grid" role="table" aria-label="Model comparison">
+        <div class="specs__row specs__row--head" role="row">
+          <span role="columnheader"></span>
+          <span role="columnheader">Zrish 18</span>
+          <span role="columnheader">Zrish 18 Air</span>
+          <span role="columnheader" class="is-hl">Zrish 18 Ultra</span>
+        </div>
+        <div class="specs__row" role="row"><span role="rowheader">Display</span><span>6.3″ OLED</span><span>6.6″ OLED</span><span class="is-hl">6.9″ OLED, 1–120 Hz</span></div>
+        <div class="specs__row" role="row"><span role="rowheader">Peak brightness</span><span>2000 nits</span><span>2400 nits</span><span class="is-hl">3000 nits</span></div>
+        <div class="specs__row" role="row"><span role="rowheader">Cameras</span><span>48 MP + 12 MP</span><span>48 MP</span><span class="is-hl">48 + 48 MP, 5× tele</span></div>
+        <div class="specs__row" role="row"><span role="rowheader">Video playback</span><span>26 h</span><span>27 h</span><span class="is-hl">33 h</span></div>
+        <div class="specs__row" role="row"><span role="rowheader">Thickness</span><span>7.8 mm</span><span>5.9 mm</span><span class="is-hl">8.25 mm</span></div>
+        <div class="specs__row" role="row"><span role="rowheader">Weight</span><span>170 g</span><span>158 g</span><span class="is-hl">221 g</span></div>
+        <div class="specs__row" role="row"><span role="rowheader">Frame</span><span>Aluminium</span><span>Titanium</span><span class="is-hl">Grade 5 titanium</span></div>
+        <div class="specs__row" role="row"><span role="rowheader">From</span><span>$799</span><span>$999</span><span class="is-hl">$1,199</span></div>
+      </div>
+    </div>
+    <footer class="foot">
+      <p class="foot__brand"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 7h16v3.6L13.6 21.4H24V25H8v-3.6L18.4 10.6H8z"/></svg> zrish</p>
+      <p class="foot__note">Zrish is a fictional brand. This is a concept site — the phone is rendered live in your browser and nothing here is for sale.</p>
+      <p class="foot__mail"><a href="mailto:hello@example.com">hello@example.com</a> · © 2026</p>
+    </footer>
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
+<script src="js/air.js"></script>
+<script src="js/app.js"></script>
+<script type="module" src="js/scene.js"></script>
+</body>
+</html>
