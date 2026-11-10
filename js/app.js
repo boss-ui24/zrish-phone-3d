@@ -24,17 +24,22 @@
   // где в секции #colors каждая отделка стоит целиком (те же точки — в ключах scene.js)
   Z.COLOR_P = [0.12, 0.38, 0.62, 0.86];
 
-  // ---- слова заголовков — в «окошки» для появления снизу ----
+  // ---- заголовки — по буквам: каждая поднимается из-под строки с поворотом; слова не рвутся ----
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   document.querySelectorAll('[data-split]').forEach((el) => {
     let i = 0;
-    const word = (html) => `<span class="w"><span style="--i:${i++}">${html}</span></span>`;
+    const label = document.createElement('div');
+    label.innerHTML = el.innerHTML.replace(/<br\s*\/?>/gi, ' ');
+    el.setAttribute('aria-label', label.textContent.replace(/\s+/g, ' ').trim());
+    const chars = (t) => [...t].map((ch) => `<span class="c" style="--i:${i++}">${esc(ch)}</span>`).join('');
+    const word = (html) => `<span class="w" aria-hidden="true">${html}</span>`;
     el.innerHTML = el.innerHTML.split(/<br\s*\/?>/i).map((line) => {
       const box = document.createElement('div');
       box.innerHTML = line;
       const out = [];
       box.childNodes.forEach((n) => {
-        if (n.nodeType === 3) n.textContent.split(/\s+/).filter(Boolean).forEach((w) => out.push(word(w)));
-        else out.push(word(n.outerHTML));
+        if (n.nodeType === 3) n.textContent.split(/\s+/).filter(Boolean).forEach((w) => out.push(word(chars(w))));
+        else { n.innerHTML = chars(n.textContent); out.push(word(n.outerHTML)); }
       });
       return out.join(' ');
     }).join('<br>');
@@ -167,6 +172,9 @@
   // первая прокрутка: насколько ушёл первый экран (0…1) — по нему CSS разводит буквы ULTRA
   const heroEl = document.getElementById('hero');
   let hpShown = -1;
+  // и доля всей прокрутки — ряды ёлок по ней сдвигаются с разной скоростью
+  const pinesEl = document.getElementById('pines');
+  let ppShown = -1;
 
   function frame(t) {
     if (lenis) lenis.raf(t * 1000);
@@ -174,6 +182,10 @@
     S.y = window.scrollY;
     const hp = Math.round(Math.min(1, S.y / innerHeight) * 1000) / 1000;
     if (hp !== hpShown) { hpShown = hp; heroEl.style.setProperty('--hp', hp); }
+    if (!reduce && pinesEl) {
+      const pp = Math.round((S.y / Math.max(1, document.documentElement.scrollHeight - innerHeight)) * 2000) / 2000;
+      if (pp !== ppShown) { ppShown = pp; pinesEl.style.setProperty('--pp', pp); }
+    }
     reveals(S.y);
     railUpdate(S.y);
     colorUpdate();

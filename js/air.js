@@ -28,11 +28,10 @@
   }
   const host = document.getElementById('pines');
   if (host) {
-    host.innerHTML = `<svg viewBox="0 0 1600 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-      <path class="p1" d="${row(4, 312, 150, 260, 0.62)}"/>
-      <path class="p2" d="${row(9, 352, 110, 210, 0.8)}"/>
-      <path class="p3" d="${row(17, 392, 80, 170, 1.05)}"/>
-    </svg>`;
+    // каждый ряд — свой svg: CSS сдвигает их с разной скоростью (параллакс глубины)
+    host.innerHTML = [row(4, 312, 150, 260, 0.62), row(9, 352, 110, 210, 0.8), row(17, 392, 80, 170, 1.05)]
+      .map((d, i) => `<svg class="l${i + 1}" viewBox="0 0 1600 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><path class="p${i + 1}" d="${d}"/></svg>`)
+      .join('');
   }
 
   // ---- точки в воздухе ----
